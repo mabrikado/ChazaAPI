@@ -7,6 +7,14 @@ import lombok.Data;
 
 import java.util.*;
 
+/**
+ * Represents an API endpoint definition.
+ *
+ * This class is used to build a representation of an endpoint
+ * from annotations, and can be serialized into structured formats
+ * like JSON. It supports extracting metadata such as HTTP method,
+ * URL, headers, request/response fields, and status codes.
+ */
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Endpoint {
@@ -32,12 +40,16 @@ public class Endpoint {
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<String> roles = List.of("any");
 
+    /**
+     * Default constructor. Initializes all internal maps.
+     */
     public Endpoint() {
         request = new HashMap<>();
         response = new HashMap<>();
         headers = new HashMap<>();
         statusCodes = new HashMap<>();
     }
+
 
     @Override
     public boolean equals(Object o) {
@@ -56,12 +68,20 @@ public class Endpoint {
                 Objects.equals(roles, endpoint.roles);
     }
 
+    /**
+     * Generates a hash code for this endpoint.
+     */
     @Override
     public int hashCode() {
         return Objects.hash(group, method, url, description, request, response, headers, statusCodes, roles);
     }
 
-
+    /**
+     * Builds an Endpoint instance from the provided EndpointDoc annotation.
+     *
+     * @param endpointDoc the annotation to read from
+     * @return the resulting Endpoint object
+     */
     public static Endpoint fromAnnotation(EndpointDoc endpointDoc) {
         Endpoint endpoint = new Endpoint();
 
@@ -82,7 +102,7 @@ public class Endpoint {
             fieldInfo.put("type", field.type());
             requestMap.put(field.name(), fieldInfo);
         }
-        endpoint.setRequest(requestMap.isEmpty() ? new HashMap<>(): requestMap);
+        endpoint.setRequest(requestMap.isEmpty() ? new HashMap<>() : requestMap);
 
         Map<String, Object> responseMap = new HashMap<>();
         for (ResponseField field : endpointDoc.response()) {
@@ -103,18 +123,23 @@ public class Endpoint {
         return endpoint;
     }
 
-
-
+    /**
+     * Scans a list of controller classes for annotated endpoints.
+     *
+     * Only classes annotated with @Chaza will be processed.
+     *
+     * @param controllers a list of controller classes to scan
+     * @return a list of extracted Endpoint objects
+     * @throws ChazaAPIException if a class is not annotated with @Chaza
+     */
     public static List<Endpoint> scan(List<Class<?>> controllers) throws ChazaAPIException {
         List<Endpoint> endpoints = new ArrayList<>();
 
         for (Class<?> controllerClass : controllers) {
-            // Only process classes annotated with @Chaza
             if (!controllerClass.isAnnotationPresent(Chaza.class)) {
-                throw new ChazaAPIException("class " +  controllerClass.getName() + " is not annotated with @Chaza");
+                throw new ChazaAPIException("class " + controllerClass.getName() + " is not annotated with @Chaza");
             }
 
-            // Inspect all declared methods
             for (java.lang.reflect.Method method : controllerClass.getDeclaredMethods()) {
                 EndpointDoc annotation = method.getAnnotation(EndpointDoc.class);
                 if (annotation != null) {
@@ -126,6 +151,4 @@ public class Endpoint {
 
         return endpoints;
     }
-
-
 }

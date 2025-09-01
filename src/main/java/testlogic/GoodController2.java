@@ -6,9 +6,9 @@ import annotations.*;
 public class GoodController2 {
 
     @EndpointDoc(
-            group = "basic",
+            group = "auth",
             method = Method.POST,
-            url = "/login",
+            url = "auth/login",
             description = "an endpoint to login your stuff",
             headers = {
                     @Header(name = "Authorization", value = "Bearer token")
