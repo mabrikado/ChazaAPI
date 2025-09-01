@@ -15,8 +15,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EndpointTest {
 
@@ -71,14 +70,20 @@ class EndpointTest {
     }
 
     @Test
-    void testScan() throws JsonProcessingException {
-        List<Endpoint> endpoints = Endpoint.scan(List.of(GoodController.class , GoodController2.class , BadController.class));
+    void testScan() throws JsonProcessingException, ChazaAPIException {
+        List<Endpoint> endpoints = Endpoint.scan(List.of(GoodController.class , GoodController2.class));
         ObjectMapper mapper = new ObjectMapper();
+        System.out.println(mapper.writeValueAsString(endpoints));
         assertEquals("[{\"group\":\"basic\",\"method\":\"GET\",\"url\":\"/\",\"description\":\"Greet the viewer\"," +
-                "\"headers\":{\"Authorization\":\"Bearer token\"},\"roles\":[\"admin\",\"user\"],\"statusCodes\":" +
-                "{\"200\":\"OK\",\"500\":\"Internal error\"}},{\"group\":\"basic\",\"method\":\"POST\",\"url\":\"/login\"," +
-                "\"description\":\"an endpoint to login your stuff\",\"request\":{\"password\":{\"type\":\"int\"},\"username\":" +
-                "{\"type\":\"string\"}},\"response\":{\"status\":{\"type\":\"boolean\"}},\"headers\":{\"Authorization\":\"Bearer token\"}," +
-                "\"roles\":[\"admin\",\"user\"],\"statusCodes\":{\"200\":\"OK\",\"500\":\"Internal error\",\"401\":\"unauthorised\"}}]" , mapper.writeValueAsString(endpoints));
+                "\"request\":{},\"response\":{},\"headers\":{\"Authorization\":\"Bearer token\"},\"roles\":" +
+                "[\"admin\",\"user\"],\"statusCodes\":{\"200\":\"OK\",\"500\":\"Internal error\"}},{\"group\":\"basic\"," +
+                "\"method\":\"POST\",\"url\":\"/login\",\"description\":\"an endpoint to login your stuff\",\"request\":{\"password\":" +
+                "{\"type\":\"int\"},\"username\":{\"type\":\"string\"}},\"response\":{\"status\":{\"type\":\"boolean\"}},\"headers\":{\"Authorization\":" +
+                "\"Bearer token\"},\"roles\":[\"admin\",\"user\"],\"statusCodes\":{\"200\":\"OK\",\"500\":\"Internal error\",\"401\":\"unauthorised\"}}]" , mapper.writeValueAsString(endpoints));
+    }
+
+    @Test
+    void testScanThrows () {
+        assertThrows(ChazaAPIException.class , ()-> Endpoint.scan(List.of(GoodController.class , BadController.class)));
     }
 }
