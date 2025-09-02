@@ -66,6 +66,22 @@ public class ApiInfo {
         return this;
     }
 
+    public ApiInfo addContact(String key, Object value){
+        if(this.contact == null){
+            this.contact = new HashMap<>();
+        }
+        this.contact.put(key, value);
+        return this;
+    }
+
+    public ApiInfo addLicense(String key, Object value){
+        if(this.license == null){
+            this.license  = new HashMap<>();
+        }
+        this.license.put(key, value);
+        return this;
+    }
+
     @Override
     public String toString() {
         return "ApiInfo{" +

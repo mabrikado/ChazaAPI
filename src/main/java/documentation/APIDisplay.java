@@ -1,5 +1,5 @@
 package documentation;
-import file.FileHandler;
+import exceptions.ChazaAPIException;
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.staticfiles.Location;
@@ -9,7 +9,6 @@ import testlogic.GoodController2;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -40,20 +39,11 @@ public class APIDisplay {
 
     public APIDisplay generateDocumentation() {
         doc = new APIDoc(apiInfo , endpoints);
-        try {
-            File outputFile = new File("doc/api-doc.json");
-            if (outputFile.getParentFile() != null) {
-                outputFile.getParentFile().mkdirs();
-            }
-            FileHandler.writeJsonToFile(doc, outputFile.getPath());
-            return this;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        return this;
     }
 
     public static void configureServer(JavalinConfig config){
-        config.staticFiles.add("doc", Location.EXTERNAL);
+        config.staticFiles.add("/public", Location.CLASSPATH);
     }
 
     /**
@@ -68,7 +58,10 @@ public class APIDisplay {
 
             throw new ChazaAPIException("Server instance cannot be null");
         }
-        server.get("/doc", ctx -> ctx.redirect("APIDoc.html"));
+        server.get("/chaza", ctx -> ctx.redirect("APIDoc.html"));
+        server.get("/chaza-json", ctx -> {
+            ctx.json(doc.toPrettyJsonString());
+        });
     }
 
 
@@ -80,8 +73,10 @@ public class APIDisplay {
                         .setApiVersion("1")
                         .setDescription("API Documentation")
                         .setTermsOfService("Terms of Service")
-                        .setContact(Map.of("Contact 1" , "fffs"))
-                        .setLicense(Map.of("title" , "SOme Licence")))
+                        .addContact("email" , "abcdf@gmail.com")
+                        .addContact("phone" , "94836")
+                        .addLicense("title" , "ChazaDoc")
+                        .addLicense("url" , "www.chazaAPI.com"))
                 .scanEndpoints(List.of(GoodController.class , GoodController2.class))
                 .generateDocumentation()
                 .hostToServer(app);

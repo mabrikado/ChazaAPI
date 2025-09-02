@@ -19,5 +19,6 @@ public @interface EndpointDoc {
         ResponseField[] response() default {};
         Header[] headers() default {};
         StatusCode[] statusCodes() default {};
+        String contentType() default "application/json";
         String[] roles() default {"any"};
 }

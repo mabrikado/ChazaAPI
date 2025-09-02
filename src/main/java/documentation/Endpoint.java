@@ -3,6 +3,7 @@ package documentation;
 import annotations.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import exceptions.ChazaAPIException;
 import lombok.Data;
 
 import java.util.*;
@@ -23,11 +24,9 @@ public class Endpoint {
     private Method method;
     private String url;
     private String description;
+    private String contentType;
 
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<String, Object> request;
-
-    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Map<String, Object> response;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -44,8 +43,6 @@ public class Endpoint {
      * Default constructor. Initializes all internal maps.
      */
     public Endpoint() {
-        request = new HashMap<>();
-        response = new HashMap<>();
         headers = new HashMap<>();
         statusCodes = new HashMap<>();
     }
@@ -102,7 +99,7 @@ public class Endpoint {
             fieldInfo.put("type", field.type());
             requestMap.put(field.name(), fieldInfo);
         }
-        endpoint.setRequest(requestMap.isEmpty() ? new HashMap<>() : requestMap);
+        endpoint.setRequest(requestMap.isEmpty() ? null : requestMap);
 
         Map<String, Object> responseMap = new HashMap<>();
         for (ResponseField field : endpointDoc.response()) {
@@ -110,15 +107,17 @@ public class Endpoint {
             fieldInfo.put("type", field.type());
             responseMap.put(field.name(), fieldInfo);
         }
-        endpoint.setResponse(responseMap.isEmpty() ? new HashMap<>() : responseMap);
+        endpoint.setResponse(responseMap.isEmpty() ? null : responseMap);
 
         Map<String, String> statusCodesMap = new HashMap<>();
         for (StatusCode sc : endpointDoc.statusCodes()) {
             statusCodesMap.put(String.valueOf(sc.code()), sc.description());
         }
-        endpoint.setStatusCodes(statusCodesMap.isEmpty() ? new HashMap<>() : statusCodesMap);
+        endpoint.setStatusCodes(statusCodesMap.isEmpty() ? null : statusCodesMap);
 
         endpoint.setRoles(Arrays.asList(endpointDoc.roles()));
+
+        endpoint.setContentType(endpointDoc.contentType());
 
         return endpoint;
     }

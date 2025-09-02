@@ -4,6 +4,7 @@ package documentation;
 import annotations.EndpointDoc;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import exceptions.ChazaAPIException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import testlogic.BadController;
@@ -73,13 +74,12 @@ class EndpointTest {
     void testScan() throws JsonProcessingException, ChazaAPIException {
         List<Endpoint> endpoints = Endpoint.scan(List.of(GoodController.class , GoodController2.class));
         ObjectMapper mapper = new ObjectMapper();
-        System.out.println(mapper.writeValueAsString(endpoints));
-        assertEquals("[{\"group\":\"basic\",\"method\":\"GET\",\"url\":\"/\",\"description\":\"Greet the viewer\"," +
-                "\"request\":{},\"response\":{},\"headers\":{\"Authorization\":\"Bearer token\"},\"roles\":" +
-                "[\"admin\",\"user\"],\"statusCodes\":{\"200\":\"OK\",\"500\":\"Internal error\"}},{\"group\":\"basic\"," +
-                "\"method\":\"POST\",\"url\":\"/login\",\"description\":\"an endpoint to login your stuff\",\"request\":{\"password\":" +
-                "{\"type\":\"int\"},\"username\":{\"type\":\"string\"}},\"response\":{\"status\":{\"type\":\"boolean\"}},\"headers\":{\"Authorization\":" +
-                "\"Bearer token\"},\"roles\":[\"admin\",\"user\"],\"statusCodes\":{\"200\":\"OK\",\"500\":\"Internal error\",\"401\":\"unauthorised\"}}]" , mapper.writeValueAsString(endpoints));
+        assertEquals("[{\"group\":\"basic\",\"method\":\"GET\",\"url\":\"/\",\"description\":\"Greet the viewer\",\"contentType\":\"application/json\"," +
+                "\"headers\":{\"Authorization\":\"Bearer token\"},\"roles\":[\"admin\",\"user\"],\"statusCodes\":{\"200\":\"OK\",\"500\":\"Internal error\"}}," +
+                "{\"group\":\"auth\",\"method\":\"POST\",\"url\":\"auth/login\",\"description\":\"an endpoint to login your stuff\",\"contentType\":" +
+                "\"application/json\",\"request\":{\"password\":{\"type\":\"int\"},\"username\":{\"type\":\"string\"}},\"response\":{\"status\":" +
+                "{\"type\":\"boolean\"}},\"headers\":{\"Authorization\":\"Bearer token\"},\"roles\":[\"admin\",\"user\"],\"statusCodes\":" +
+                "{\"200\":\"OK\",\"500\":\"Internal error\",\"401\":\"unauthorised\"}}]" , mapper.writeValueAsString(endpoints));
     }
 
     @Test
