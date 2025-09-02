@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Default Title</title>
+    <style>
+        body {
+            font-family: "Segoe UI", sans-serif;
+            background: #f4f7f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: linear-gradient(135deg, #1f497d, #3b70b2);
+            color: white;
+            padding: 25px 20px 40px 20px;
+            border-bottom: 3px solid #16355f;
+
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 10px 0;
+            font-size: 26px;
+        }
+
+        header p {
+            margin: 0 0 20px 0;
+            font-size: 14px;
+        }
+
+        .info-section {
+            background-color: #234a8a;
+            color: white;
+            margin: 15px auto 0 auto;
+            padding: 12px 20px;
+            border-radius: 6px;
+            max-width: 600px;
+            text-align: left;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .info-section h3 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .info-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .info-table tbody tr:nth-child(even) {
+            background-color: #1c3e70;
+        }
+
+        .info-table td {
+            padding: 6px 10px;
+            vertical-align: top;
+            font-size: 14px;
+            word-break: break-word;
+            width: 50%;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 20px;
+
+            display: flex;
+            justify-content: flex-end;
+        }
+
+
+        .select-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            min-width: 220px;
+        }
+
+        label[for="group-select"] {
+            font-weight: bold;
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .dropdown-select {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-color: #3498db;
+            color: white;
+            padding: 10px 40px 10px 15px;
+            font-size: 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='white' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            background-size: 12px;
+            margin-bottom: 20px;
+            width: 100%;
+        }
+
+        .dropdown-select:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.5);
+        }
+
+        #api-container {
+            margin-top: 20px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            padding: 0 20px;
+        }
+
+        .group {
+            background: white;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+            padding: 0 0 15px 0;
+        }
+
+        .group-header {
+            font-weight: bold;
+            font-size: 18px;
+            padding: 15px;
+            background-color: #3498db;
+            color: white;
+            border-radius: 6px 6px 0 0;
+        }
+
+        .endpoint {
+            padding: 15px;
+            border-top: 1px solid #ddd;
+            background: #f9f9f9;
+            margin: 10px 0;
+            border-left: 4px solid #ccc;
+            border-radius: 0 0 6px 6px;
+        }
+
+        .method {
+            font-weight: bold;
+            text-transform: uppercase;
+            padding: 4px 8px;
+            border-radius: 4px;
+            color: white;
+            font-size: 12px;
+            margin-right: 10px;
+            display: inline-block;
+            min-width: 50px;
+            text-align: center;
+        }
+
+        .GET { background-color: #2ecc71; }
+        .POST { background-color: #3498db; }
+        .DELETE { background-color: #e74c3c; }
+        .PUT { background-color: #f39c12; }
+
+        .role {
+            background-color: #f1c40f;
+            color: black;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+        pre {
+            background: #f0f0f0;
+            padding: 10px;
+            overflow-x: auto;
+            border-radius: 4px;
+            margin-top: 5px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .section {
+            margin-top: 10px;
+        }
+
+        .section h4 {
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1 id="api-title">Loading...</h1>
+    <p id="api-description"></p>
+
+    <div id="terms-of-service" class="info-section" style="display:none;">
+        <h3>Terms of Service</h3>
+        <p id="tos-content"></p>
+    </div>
+
+    <div id="contact-info" class="info-section" style="display:none;">
+        <h3>Contact</h3>
+        <table class="info-table" id="contact-table">
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <div id="license-info" class="info-section" style="display:none;">
+        <h3>License</h3>
+        <table class="info-table" id="license-table">
+            <tbody></tbody>
+        </table>
+    </div>
+</header>
+
+<div class="container">
+    <div class="select-wrapper">
+        <label for="group-select">Select Category:</label>
+        <select id="group-select" class="dropdown-select" aria-label="Select API category">
+            <option value="">-- Select a category --</option>
+        </select>
+    </div>
+</div>
+
+<div id="api-container"></div>
+
+<script>
+    (function() {
+        // Object to hold endpoints grouped by category
+        const allGroups = {};
+
+        const apiTitleElem = document.getElementById('api-title');
+        const apiDescElem = document.getElementById('api-description');
+        const selectElem = document.getElementById('group-select');
+        const containerElem = document.getElementById('api-container');
+
+        const tosSection = document.getElementById('terms-of-service');
+        const tosContent = document.getElementById('tos-content');
+        const contactSection = document.getElementById('contact-info');
+        const contactTableBody = document.getElementById('contact-table').querySelector('tbody');
+        const licenseSection = document.getElementById('license-info');
+        const licenseTableBody = document.getElementById('license-table').querySelector('tbody');
+
+        function fillTable(bodyElem, dataObj) {
+            bodyElem.innerHTML = '';
+
+            for (const [key, value] of Object.entries(dataObj)) {
+                const row = document.createElement('tr');
+
+                const keyTd = document.createElement('td');
+                keyTd.textContent = key;
+
+                const valTd = document.createElement('td');
+                valTd.textContent = value;
+
+                row.appendChild(keyTd);
+                row.appendChild(valTd);
+                bodyElem.appendChild(row);
+            }
+        }
+
+        fetch('/chaza-json')
+            .then(response => {
+                if (!response.ok) throw new Error('Network response was not ok');
+                return response.json();
+            })
+            .then(apiData => {
+                //Display the API Info
+                const version = apiData.apiInfo.version || apiData.apiInfo.apiVersion || "N/A";
+                document.title = `${apiData.apiInfo.title} (v${version})`;
+                apiTitleElem.textContent = `${apiData.apiInfo.title} (v${version})`;
+
+                apiDescElem.textContent = apiData.apiInfo.description || "";
+
+                if (apiData.apiInfo.termsOfService && apiData.apiInfo.termsOfService.trim() !== "") {
+                    tosContent.textContent = apiData.apiInfo.termsOfService;
+                    tosSection.style.display = 'block';
+                } else {
+                    tosSection.style.display = 'none';
+                }
+
+                if (apiData.apiInfo.contact && Object.keys(apiData.apiInfo.contact).length > 0) {
+                    fillTable(contactTableBody, apiData.apiInfo.contact);
+                    contactSection.style.display = 'block';
+                } else {
+                    contactSection.style.display = 'none';
+                }
+
+                if (apiData.apiInfo.license && Object.keys(apiData.apiInfo.license).length > 0) {
+                    fillTable(licenseTableBody, apiData.apiInfo.license);
+                    licenseSection.style.display = 'block';
+                } else {
+                    licenseSection.style.display = 'none';
+                }
+
+                //Add Endpoints
+                if (Array.isArray(apiData.endpoints)) {
+                    apiData.endpoints.forEach(endpoint => {
+                        if (!endpoint.group) endpoint.group = "Ungrouped";
+
+                        if (!allGroups[endpoint.group]) {
+                            allGroups[endpoint.group] = [];
+                        }
+                        allGroups[endpoint.group].push(endpoint);
+                    });
+                } else {
+                    apiTitleElem.textContent = 'No endpoints found in API documentation.';
+                    return;
+                }
+
+                // Add categories to the dropdown, sorted alphabetically
+                Object.keys(allGroups)
+                    .sort()
+                    .forEach(groupName => {
+                        const option = document.createElement('option');
+                        option.value = groupName;
+                        option.textContent = groupName;
+                        selectElem.appendChild(option);
+                    });
+
+                selectElem.addEventListener('change', e => {
+                    const selectedGroup = e.target.value;
+
+                    containerElem.innerHTML = '';
+
+                    if (!selectedGroup) return;
+
+                    const groupDiv = document.createElement('div');
+                    groupDiv.className = 'group';
+
+                    const header = document.createElement('div');
+                    header.className = 'group-header';
+                    header.textContent = selectedGroup;
+                    groupDiv.appendChild(header);
+
+                    const endpoints = allGroups[selectedGroup];
+
+                    if (!endpoints || endpoints.length === 0) {
+                        const noEpMsg = document.createElement('p');
+                        noEpMsg.textContent = 'No endpoints found for this category.';
+                        groupDiv.appendChild(noEpMsg);
+                    } else {
+                        endpoints.forEach(api => {
+                            const ep = document.createElement('div');
+                            ep.className = 'endpoint';
+
+                            const methodClass = api.method ? api.method.toUpperCase() : 'GET';
+                            const methodSpan = `<span class="method ${methodClass}">${methodClass}</span>`;
+
+                            const roleSpan = (Array.isArray(api.roles) && api.roles.length > 0)
+                                ? `<span class="role">Role: ${api.roles.join(', ')}</span>`
+                                : "";
+
+                            const headersSection = api.headers
+                                ? `<div class="section">
+                                    <h4>Headers</h4>
+                                    <pre>${JSON.stringify(api.headers, null, 2)}</pre>
+                               </div>`
+                                : "";
+
+                            ep.innerHTML = `
+                            <div>${methodSpan} <strong>${api.url || '[No URL]'}</strong> ${roleSpan}</div>
+                            <div class="section"><h4>Description</h4><p>${api.description || "No description provided."}</p></div>
+                            ${api.contentType ? `<div class="section"><h4>Content Type</h4><p>${api.contentType}</p></div>` : ""}
+                            ${headersSection}
+                            ${api.request ? `<div class="section"><h4>Request</h4><pre>${JSON.stringify(api.request, null, 2)}</pre></div>` : ""}
+                            ${api.response ? `<div class="section"><h4>Response</h4><pre>${JSON.stringify(api.response, null, 2)}</pre></div>` : ""}
+                            <div class="section"><h4>Status Codes</h4><pre>${JSON.stringify(api.statusCodes || {}, null, 2)}</pre></div>
+                        `;
+
+                            groupDiv.appendChild(ep);
+                        });
+                    }
+
+                    containerElem.appendChild(groupDiv);
+                });
+            })
+            .catch(error => {
+                apiTitleElem.textContent = 'Failed to load API documentation.';
+                apiDescElem.textContent = error.message;
+                console.error('Error fetching API doc:', error);
+            });
+    })();
+</script>
+</body>
+</html>

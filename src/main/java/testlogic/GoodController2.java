@@ -5,7 +5,7 @@ import annotations.*;
 @Chaza
 public class GoodController2 {
 
-    @EndpointDoc(
+    @EndPoint(
             group = "auth",
             method = Method.POST,
             url = "auth/login",

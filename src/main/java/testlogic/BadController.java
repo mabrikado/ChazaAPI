@@ -1,12 +1,12 @@
 package testlogic;
 
-import annotations.EndpointDoc;
+import annotations.EndPoint;
 import annotations.Header;
 import annotations.Method;
 import annotations.StatusCode;
 
 public class BadController {
-    @EndpointDoc(
+    @EndPoint(
             group = "basic",
             method = Method.GET,
             url = "/",

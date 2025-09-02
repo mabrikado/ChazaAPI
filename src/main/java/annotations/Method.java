@@ -1,5 +1,5 @@
 package annotations;
 
 public enum Method {
-    POST , GET , PUT , DELETE
+    POST , GET , PUT , DELETE , PATCH
 }

@@ -4,7 +4,7 @@ import annotations.*;
 @Chaza
 public class GoodController {
 
-    @EndpointDoc(
+    @EndPoint(
             group = "basic",
             method = Method.GET,
             url = "/",
@@ -12,6 +12,7 @@ public class GoodController {
             headers = {
                     @Header(name = "Authorization", value = "Bearer token")
             },
+            contentType = "text/plain",
             statusCodes = {
                     @StatusCode(code = 200, description = "OK"),
                     @StatusCode(code = 500, description = "Internal error")

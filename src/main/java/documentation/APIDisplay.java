@@ -46,12 +46,6 @@ public class APIDisplay {
         config.staticFiles.add("/public", Location.CLASSPATH);
     }
 
-    /**
-     * Hosts the API documentation redirect endpoint on the provided Javalin server.
-     *
-     * @param server the Javalin server instance
-     * @throws ChazaAPIException if the server is already running
-     */
     public void hostToServer(Javalin server) throws ChazaAPIException {
 
         if (server == null) {

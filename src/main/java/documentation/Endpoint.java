@@ -76,25 +76,25 @@ public class Endpoint {
     /**
      * Builds an Endpoint instance from the provided EndpointDoc annotation.
      *
-     * @param endpointDoc the annotation to read from
+     * @param endPoint the annotation to read from
      * @return the resulting Endpoint object
      */
-    public static Endpoint fromAnnotation(EndpointDoc endpointDoc) {
+    public static Endpoint fromAnnotation(EndPoint endPoint) {
         Endpoint endpoint = new Endpoint();
 
-        endpoint.setGroup(endpointDoc.group());
-        endpoint.setMethod(endpointDoc.method());
-        endpoint.setUrl(endpointDoc.url());
-        endpoint.setDescription(endpointDoc.description());
+        endpoint.setGroup(endPoint.group());
+        endpoint.setMethod(endPoint.method());
+        endpoint.setUrl(endPoint.url());
+        endpoint.setDescription(endPoint.description());
 
         Map<String, Object> headersMap = new HashMap<>();
-        for (Header header : endpointDoc.headers()) {
+        for (Header header : endPoint.headers()) {
             headersMap.put(header.name(), header.value());
         }
         endpoint.setHeaders(headersMap);
 
         Map<String, Object> requestMap = new HashMap<>();
-        for (RequestField field : endpointDoc.request()) {
+        for (RequestField field : endPoint.request()) {
             Map<String, String> fieldInfo = new HashMap<>();
             fieldInfo.put("type", field.type());
             requestMap.put(field.name(), fieldInfo);
@@ -102,7 +102,7 @@ public class Endpoint {
         endpoint.setRequest(requestMap.isEmpty() ? null : requestMap);
 
         Map<String, Object> responseMap = new HashMap<>();
-        for (ResponseField field : endpointDoc.response()) {
+        for (ResponseField field : endPoint.response()) {
             Map<String, String> fieldInfo = new HashMap<>();
             fieldInfo.put("type", field.type());
             responseMap.put(field.name(), fieldInfo);
@@ -110,14 +110,14 @@ public class Endpoint {
         endpoint.setResponse(responseMap.isEmpty() ? null : responseMap);
 
         Map<String, String> statusCodesMap = new HashMap<>();
-        for (StatusCode sc : endpointDoc.statusCodes()) {
+        for (StatusCode sc : endPoint.statusCodes()) {
             statusCodesMap.put(String.valueOf(sc.code()), sc.description());
         }
         endpoint.setStatusCodes(statusCodesMap.isEmpty() ? null : statusCodesMap);
 
-        endpoint.setRoles(Arrays.asList(endpointDoc.roles()));
+        endpoint.setRoles(Arrays.asList(endPoint.roles()));
 
-        endpoint.setContentType(endpointDoc.contentType());
+        endpoint.setContentType(endPoint.contentType());
 
         return endpoint;
     }
@@ -140,7 +140,7 @@ public class Endpoint {
             }
 
             for (java.lang.reflect.Method method : controllerClass.getDeclaredMethods()) {
-                EndpointDoc annotation = method.getAnnotation(EndpointDoc.class);
+                EndPoint annotation = method.getAnnotation(EndPoint.class);
                 if (annotation != null) {
                     Endpoint endpoint = Endpoint.fromAnnotation(annotation);
                     endpoints.add(endpoint);
