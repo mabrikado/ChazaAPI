@@ -9,9 +9,9 @@
 
     <scm>
         <connection>scm:git:https://github.com/mabrikado/ChazaAPI.git</connection>
-        <developerConnection>scm:git:git@github.com:mabrikado/ChazaAPI.git</developerConnection>
+        <developerConnection>scm:git:https://github.com/mabrikado/ChazaAPI.git</developerConnection>
         <url>https://github.com/mabrikado/ChazaAPI</url>
-        <tag>ChazaAPI-1.0.0</tag>
+        <tag>HEAD</tag>
     </scm>
 
     <properties>
