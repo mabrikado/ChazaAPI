@@ -92,5 +92,14 @@ ChazaAPI is licensed under the **Apache License 2.0** — you are free to use, m
  *     http://www.apache.org/licenses/LICENSE-2.0
  */
 ```
+## 👤 Author
 
+**Created by**: Sibusiso Buthelezi  
+🔗 GitHub: [@mabrikado](https://github.com/mabrikado)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! If you’d like to contribute to ChazaAPI, please fork the repository and open a pull request. Guidelines coming soon.
 
