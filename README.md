@@ -50,3 +50,47 @@ Add the following Maven dependency to your `pom.xml`:
   <artifactId>ChazaAPI</artifactId>
   <version>1.0.1</version>
 </dependency>
+```
+## 🚀 Getting Started
+
+Follow the official tutorial to set up and use ChazaAPI in your project:  
+📖 [https://chazaapidocs.netlify.app/tutorial/](https://chazaapidocs.netlify.app/tutorial/)
+
+This guide covers:
+
+- Project setup and configuration
+- Adding documentation annotations
+- Serving the generated documentation with Javalin
+
+---
+
+## 📂 How It Works
+
+ChazaAPI uses Java annotations to collect metadata about your APIs. This includes:
+
+- 📌 API-wide metadata: title, description, version, contact, license
+- 🔍 Endpoint metadata: HTTP method, path, request/response fields, status codes, security roles
+
+During your Maven build, these annotations are processed to generate comprehensive documentation that can be served via your Javalin app.
+
+---
+
+## 🛡 License
+
+ChazaAPI is licensed under the **Apache License 2.0** — you are free to use, modify, and distribute the library in both open-source and commercial projects.
+
+```java
+/**
+ * ChazaAPI - A Javalin-based API documentation generator.
+ *
+ * Copyright (c) 2025 Sibusiso Buthelezi
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ */
+```
+
+
