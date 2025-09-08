@@ -1,9 +1,9 @@
-package documentation;
+package chazaAPI.documentation;
 
-import annotations.*;
+import chazaAPI.annotations.*;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import exceptions.ChazaAPIException;
+import chazaAPI.exceptions.ChazaAPIException;
 import lombok.Data;
 
 import java.util.*;
@@ -22,6 +22,7 @@ public class Endpoint {
 
     private String group;
     private Method method;
+    private String accept;
     private String url;
     private String description;
     private String contentType;
@@ -62,7 +63,9 @@ public class Endpoint {
                 Objects.equals(response, endpoint.response) &&
                 Objects.equals(headers, endpoint.headers) &&
                 Objects.equals(statusCodes, endpoint.statusCodes) &&
-                Objects.equals(roles, endpoint.roles);
+                Objects.equals(roles, endpoint.roles) &&
+                Objects.equals(contentType, endpoint.contentType) &&
+                Objects.equals(accept, endpoint.accept);
     }
 
     /**
@@ -79,48 +82,81 @@ public class Endpoint {
      * @param endPoint the annotation to read from
      * @return the resulting Endpoint object
      */
-    public static Endpoint fromAnnotation(EndPoint endPoint) {
+    public static Endpoint fromAnnotation(EndPoint endPoint, Chaza chaza) {
         Endpoint endpoint = new Endpoint();
 
-        endpoint.setGroup(endPoint.group());
+        // Set group: prefer @EndPoint.group over @Chaza.group
+        endpoint.setGroup(endPoint.group().isEmpty() ? chaza.group() : endPoint.group());
+
+        // Set HTTP method
         endpoint.setMethod(endPoint.method());
-        endpoint.setUrl(endPoint.url());
+
+        // Set full URL using @Chaza.baseUrl + @EndPoint.url
+        String baseUrl = chaza.baseUrl().endsWith("/") ? chaza.baseUrl() : chaza.baseUrl() + "/";
+        String endpointUrl = endPoint.url().startsWith("/") ? endPoint.url().substring(1) : endPoint.url();
+        endpoint.setUrl(baseUrl + endpointUrl);
+
+        // Set description
         endpoint.setDescription(endPoint.description());
 
-        Map<String, Object> headersMap = new HashMap<>();
-        for (Header header : endPoint.headers()) {
-            headersMap.put(header.name(), header.value());
+        // Set accepted media type: prefer @EndPoint.accept over @Chaza.accept
+        endpoint.setAccept(endPoint.accept().isEmpty() ? chaza.accept() : endPoint.accept());
+
+        // Set content type: prefer @EndPoint.contentType over @Chaza.contentType
+        endpoint.setContentType(endPoint.contentType().isEmpty() ? chaza.contentType() : endPoint.contentType());
+
+        // Set roles
+        if(endPoint.roles().length == 0){
+            endpoint.setRoles(Arrays.asList(chaza.roles()));
+        }else{
+            endpoint.setRoles(List.of(endPoint.roles()));
         }
-        endpoint.setHeaders(headersMap);
 
-        Map<String, Object> requestMap = new HashMap<>();
-        for (RequestField field : endPoint.request()) {
-            Map<String, String> fieldInfo = new HashMap<>();
-            fieldInfo.put("type", field.type());
-            requestMap.put(field.name(), fieldInfo);
+
+        // Set headers
+        if (endPoint.headers().length > 0) {
+            Map<String, Object> headersMap = new HashMap<>();
+            for (Header header : endPoint.headers()) {
+                headersMap.put(header.name(), header.value());
+            }
+            endpoint.setHeaders(headersMap);
         }
-        endpoint.setRequest(requestMap.isEmpty() ? null : requestMap);
 
-        Map<String, Object> responseMap = new HashMap<>();
-        for (ResponseField field : endPoint.response()) {
-            Map<String, String> fieldInfo = new HashMap<>();
-            fieldInfo.put("type", field.type());
-            responseMap.put(field.name(), fieldInfo);
+        // Set request fields
+        if (endPoint.requestFields().length > 0) {
+            Map<String, Object> requestMap = new HashMap<>();
+            for (Field field : endPoint.requestFields()) {
+                Map<String, String> fieldInfo = new HashMap<>();
+                fieldInfo.put("type", field.type());
+                requestMap.put(field.name(), fieldInfo);
+            }
+            endpoint.setRequest(requestMap);
         }
-        endpoint.setResponse(responseMap.isEmpty() ? null : responseMap);
 
-        Map<String, String> statusCodesMap = new HashMap<>();
-        for (StatusCode sc : endPoint.statusCodes()) {
-            statusCodesMap.put(String.valueOf(sc.code()), sc.description());
+        // Set response fields
+        if (endPoint.responseFields().length > 0) {
+            Map<String, Object> responseMap = new HashMap<>();
+            for (Field field : endPoint.responseFields()) {
+                Map<String, String> fieldInfo = new HashMap<>();
+                fieldInfo.put("type", field.type());
+                responseMap.put(field.name(), fieldInfo);
+            }
+            endpoint.setResponse(responseMap);
         }
-        endpoint.setStatusCodes(statusCodesMap.isEmpty() ? null : statusCodesMap);
 
-        endpoint.setRoles(Arrays.asList(endPoint.roles()));
+        // Set status codes
+        if (endPoint.statusCodes().length > 0) {
+            Map<String, String> statusCodesMap = new HashMap<>();
+            for (Status sc : endPoint.statusCodes()) {
+                statusCodesMap.put(String.valueOf(sc.code()), sc.description());
+            }
+            endpoint.setStatusCodes(statusCodesMap);
+        }
 
-        endpoint.setContentType(endPoint.contentType());
 
         return endpoint;
     }
+
 
     /**
      * Scans a list of controller classes for annotated endpoints.
@@ -142,7 +178,7 @@ public class Endpoint {
             for (java.lang.reflect.Method method : controllerClass.getDeclaredMethods()) {
                 EndPoint annotation = method.getAnnotation(EndPoint.class);
                 if (annotation != null) {
-                    Endpoint endpoint = Endpoint.fromAnnotation(annotation);
+                    Endpoint endpoint = Endpoint.fromAnnotation(annotation , controllerClass.getAnnotation(Chaza.class));
                     endpoints.add(endpoint);
                 }
             }

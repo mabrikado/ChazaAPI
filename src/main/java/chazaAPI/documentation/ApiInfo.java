@@ -1,10 +1,7 @@
-package documentation;
+package chazaAPI.documentation;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import io.javalin.Javalin;
-import lombok.Data;
 import lombok.Getter;
 
 import java.util.HashMap;

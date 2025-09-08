@@ -4,8 +4,50 @@
 
     <groupId>io.github.mabrikado</groupId>
     <artifactId>ChazaAPI</artifactId>
-    <version>1.0.1-SNAPSHOT</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
+
+    <name>ChazaAPI</name>
+    <description>
+        ChazaAPI is a Java library designed to streamline the creation of API documentation by automating the generation
+        of clear, human-readable, and machine-processable documentation directly from your source code.
+
+        The name Chaza means “explain” in Zulu, reflecting the library’s mission to clearly explain your API to its users.
+
+        Currently, ChazaAPI integrates with the Javalin web framework, allowing developers to embed documentation within
+        their existing applications. Support for additional frameworks is planned in future releases.
+    </description>
+    <url>https://github.com/mabrikado/ChazaAPI</url>
+
+
+    <distributionManagement>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
+        <snapshotRepository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>mabrikado</id>
+            <name>Sibusiso</name>
+            <email>buthelezimadondo67@gmail.com</email>
+        </developer>
+    </developers>
 
     <scm>
         <connection>scm:git:https://github.com/mabrikado/ChazaAPI.git</connection>
@@ -19,6 +61,8 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <javalin.version>6.7.0</javalin.version>
+        <gpg.executable>gpg</gpg.executable>
+        <gpg.keyname>544508494E91FC864CD7FFF299A84C856D0FE03D</gpg.keyname>
     </properties>
 
     <dependencies>
@@ -97,7 +141,7 @@
                         <configuration>
                             <transformers>
                                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                    <mainClass>documentation.APIDisplay</mainClass>
+                                    <mainClass>chazaAPI.documentation.APIDisplay</mainClass>
                                 </transformer>
                             </transformers>
                         </configuration>

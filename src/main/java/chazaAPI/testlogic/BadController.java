@@ -1,9 +1,11 @@
-package testlogic;
-import annotations.*;
+package chazaAPI.testlogic;
 
-@Chaza
-public class GoodController {
+import chazaAPI.annotations.EndPoint;
+import chazaAPI.annotations.Header;
+import chazaAPI.annotations.Method;
+import chazaAPI.annotations.Status;
 
+public class BadController {
     @EndPoint(
             group = "basic",
             method = Method.GET,
@@ -12,10 +14,9 @@ public class GoodController {
             headers = {
                     @Header(name = "Authorization", value = "Bearer token")
             },
-            contentType = "text/plain",
             statusCodes = {
-                    @StatusCode(code = 200, description = "OK"),
-                    @StatusCode(code = 500, description = "Internal error")
+                    @Status(code = 200, description = "OK"),
+                    @Status(code = 500, description = "Internal error")
             },
             roles = {"admin", "user"}
     )

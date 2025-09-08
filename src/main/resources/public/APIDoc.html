@@ -267,13 +267,69 @@
             }
         }
 
+        function renderEndpointsForGroup(groupName) {
+            containerElem.innerHTML = '';
+
+            if (!groupName) return;
+
+            const groupDiv = document.createElement('div');
+            groupDiv.className = 'group';
+
+            const header = document.createElement('div');
+            header.className = 'group-header';
+            header.textContent = groupName;
+            groupDiv.appendChild(header);
+
+            const endpoints = allGroups[groupName];
+
+            if (!endpoints || endpoints.length === 0) {
+                const noEpMsg = document.createElement('p');
+                noEpMsg.textContent = 'No endpoints found for this category.';
+                groupDiv.appendChild(noEpMsg);
+            } else {
+                endpoints.forEach(api => {
+                    const ep = document.createElement('div');
+                    ep.className = 'endpoint';
+
+                    const methodClass = api.method ? api.method.toUpperCase() : 'GET';
+                    const methodSpan = `<span class="method ${methodClass}">${methodClass}</span>`;
+
+                    const roleSpan = (Array.isArray(api.roles) && api.roles.length > 0)
+                        ? `<span class="role">Role: ${api.roles.join(', ')}</span>`
+                        : "";
+
+                    const headersSection = api.headers
+                        ? `<div class="section">
+                            <h4>Headers</h4>
+                            <pre>${JSON.stringify(api.headers, null, 2)}</pre>
+                       </div>`
+                        : "";
+
+                    ep.innerHTML = `
+                    <div>${methodSpan} <strong>${api.url || '[No URL]'}</strong> ${roleSpan}</div>
+                    <div class="section"><h4>Description</h4><p>${api.description || "No description provided."}</p></div>
+                    ${api.accept ? `<div class="section"><h4>Accept</h4><p>${api.accept}</p></div>` : ""}
+                    ${api.contentType ? `<div class="section"><h4>Content Type</h4><p>${api.contentType}</p></div>` : ""}
+                    ${headersSection}
+                    ${api.request ? `<div class="section"><h4>Request</h4><pre>${JSON.stringify(api.request, null, 2)}</pre></div>` : ""}
+                    ${api.response ? `<div class="section"><h4>Response</h4><pre>${JSON.stringify(api.response, null, 2)}</pre></div>` : ""}
+                    <div class="section"><h4>Status Codes</h4><pre>${JSON.stringify(api.statusCodes || {}, null, 2)}</pre></div>
+                `;
+
+                    groupDiv.appendChild(ep);
+                });
+            }
+
+            containerElem.appendChild(groupDiv);
+        }
+
         fetch('/chaza-json')
             .then(response => {
                 if (!response.ok) throw new Error('Network response was not ok');
                 return response.json();
             })
             .then(apiData => {
-                //Display the API Info
+                // Display the API Info
                 const version = apiData.apiInfo.version || apiData.apiInfo.apiVersion || "N/A";
                 document.title = `${apiData.apiInfo.title} (v${version})`;
                 apiTitleElem.textContent = `${apiData.apiInfo.title} (v${version})`;
@@ -301,7 +357,7 @@
                     licenseSection.style.display = 'none';
                 }
 
-                //Add Endpoints
+                // Add endpoints grouped by category
                 if (Array.isArray(apiData.endpoints)) {
                     apiData.endpoints.forEach(endpoint => {
                         if (!endpoint.group) endpoint.group = "Ungrouped";
@@ -317,70 +373,23 @@
                 }
 
                 // Add categories to the dropdown, sorted alphabetically
-                Object.keys(allGroups)
-                    .sort()
-                    .forEach(groupName => {
-                        const option = document.createElement('option');
-                        option.value = groupName;
-                        option.textContent = groupName;
-                        selectElem.appendChild(option);
-                    });
+                const sortedGroups = Object.keys(allGroups).sort();
+
+                sortedGroups.forEach(groupName => {
+                    const option = document.createElement('option');
+                    option.value = groupName;
+                    option.textContent = groupName;
+                    selectElem.appendChild(option);
+                });
+
+                // Auto-select the first category (if exists)
+                if (sortedGroups.length > 0) {
+                    selectElem.value = sortedGroups[0];
+                    renderEndpointsForGroup(sortedGroups[0]);
+                }
 
                 selectElem.addEventListener('change', e => {
-                    const selectedGroup = e.target.value;
-
-                    containerElem.innerHTML = '';
-
-                    if (!selectedGroup) return;
-
-                    const groupDiv = document.createElement('div');
-                    groupDiv.className = 'group';
-
-                    const header = document.createElement('div');
-                    header.className = 'group-header';
-                    header.textContent = selectedGroup;
-                    groupDiv.appendChild(header);
-
-                    const endpoints = allGroups[selectedGroup];
-
-                    if (!endpoints || endpoints.length === 0) {
-                        const noEpMsg = document.createElement('p');
-                        noEpMsg.textContent = 'No endpoints found for this category.';
-                        groupDiv.appendChild(noEpMsg);
-                    } else {
-                        endpoints.forEach(api => {
-                            const ep = document.createElement('div');
-                            ep.className = 'endpoint';
-
-                            const methodClass = api.method ? api.method.toUpperCase() : 'GET';
-                            const methodSpan = `<span class="method ${methodClass}">${methodClass}</span>`;
-
-                            const roleSpan = (Array.isArray(api.roles) && api.roles.length > 0)
-                                ? `<span class="role">Role: ${api.roles.join(', ')}</span>`
-                                : "";
-
-                            const headersSection = api.headers
-                                ? `<div class="section">
-                                    <h4>Headers</h4>
-                                    <pre>${JSON.stringify(api.headers, null, 2)}</pre>
-                               </div>`
-                                : "";
-
-                            ep.innerHTML = `
-                            <div>${methodSpan} <strong>${api.url || '[No URL]'}</strong> ${roleSpan}</div>
-                            <div class="section"><h4>Description</h4><p>${api.description || "No description provided."}</p></div>
-                            ${api.contentType ? `<div class="section"><h4>Content Type</h4><p>${api.contentType}</p></div>` : ""}
-                            ${headersSection}
-                            ${api.request ? `<div class="section"><h4>Request</h4><pre>${JSON.stringify(api.request, null, 2)}</pre></div>` : ""}
-                            ${api.response ? `<div class="section"><h4>Response</h4><pre>${JSON.stringify(api.response, null, 2)}</pre></div>` : ""}
-                            <div class="section"><h4>Status Codes</h4><pre>${JSON.stringify(api.statusCodes || {}, null, 2)}</pre></div>
-                        `;
-
-                            groupDiv.appendChild(ep);
-                        });
-                    }
-
-                    containerElem.appendChild(groupDiv);
+                    renderEndpointsForGroup(e.target.value);
                 });
             })
             .catch(error => {

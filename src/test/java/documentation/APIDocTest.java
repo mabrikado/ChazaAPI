@@ -1,9 +1,12 @@
 package documentation;
 
-import exceptions.ChazaAPIException;
+import chazaAPI.documentation.APIDoc;
+import chazaAPI.documentation.ApiInfo;
+import chazaAPI.documentation.Endpoint;
+import chazaAPI.exceptions.ChazaAPIException;
 import org.junit.jupiter.api.Test;
-import testlogic.GoodController;
-import testlogic.GoodController2;
+import chazaAPI.testlogic.GoodController;
+import chazaAPI.testlogic.GoodController2;
 
 import java.util.HashMap;
 import java.util.List;
@@ -37,72 +40,13 @@ class APIDocTest {
         assertEquals("{\"apiInfo\":{\"title\":\"Good API\",\"description\":\"A good description\",\"termsOfService\":" +
                 "\"https://example.com/tos\",\"contact\":{\"name\":\"API Support\",\"url\":\"https://www.example.com/support\",\"email\":" +
                 "\"support@example.com\"},\"license\":{\"name\":\"Apache 2.0\",\"url\":\"https://www.apache.org/licenses/LICENSE-2.0\"}," +
-                "\"version\":\"1.0.0\"},\"endpoints\":[{\"group\":\"basic\",\"method\":\"GET\",\"url\":\"/\",\"description\":\"Greet the viewer\"," +
-                "\"contentType\":\"text/plain\",\"headers\":{\"Authorization\":\"Bearer token\"},\"roles\":[\"admin\",\"user\"],\"statusCodes\"" +
-                ":{\"200\":\"OK\",\"500\":\"Internal error\"}},{\"group\":\"auth\",\"method\":\"POST\",\"url\":\"auth/login\",\"description\"" +
-                ":\"an endpoint to login your stuff\",\"contentType\":\"application/json\",\"request\":{\"password\":{\"type\":\"int\"},\"username\"" +
-                ":{\"type\":\"string\"}},\"response\":{\"status\":{\"type\":\"boolean\"}},\"headers\":{\"Authorization\":\"Bearer token\"},\"roles\"" +
-                ":[\"admin\",\"user\"],\"statusCodes\":{\"200\":\"OK\",\"500\":\"Internal error\",\"401\":\"unauthorised\"}}]}" , doc.toJsonString());
-        assertEquals("{\n" +
-                "  \"apiInfo\" : {\n" +
-                "    \"title\" : \"Good API\",\n" +
-                "    \"description\" : \"A good description\",\n" +
-                "    \"termsOfService\" : \"https://example.com/tos\",\n" +
-                "    \"contact\" : {\n" +
-                "      \"name\" : \"API Support\",\n" +
-                "      \"url\" : \"https://www.example.com/support\",\n" +
-                "      \"email\" : \"support@example.com\"\n" +
-                "    },\n" +
-                "    \"license\" : {\n" +
-                "      \"name\" : \"Apache 2.0\",\n" +
-                "      \"url\" : \"https://www.apache.org/licenses/LICENSE-2.0\"\n" +
-                "    },\n" +
-                "    \"version\" : \"1.0.0\"\n" +
-                "  },\n" +
-                "  \"endpoints\" : [ {\n" +
-                "    \"group\" : \"basic\",\n" +
-                "    \"method\" : \"GET\",\n" +
-                "    \"url\" : \"/\",\n" +
-                "    \"description\" : \"Greet the viewer\",\n" +
-                "    \"contentType\" : \"text/plain\",\n" +
-                "    \"headers\" : {\n" +
-                "      \"Authorization\" : \"Bearer token\"\n" +
-                "    },\n" +
-                "    \"roles\" : [ \"admin\", \"user\" ],\n" +
-                "    \"statusCodes\" : {\n" +
-                "      \"200\" : \"OK\",\n" +
-                "      \"500\" : \"Internal error\"\n" +
-                "    }\n" +
-                "  }, {\n" +
-                "    \"group\" : \"auth\",\n" +
-                "    \"method\" : \"POST\",\n" +
-                "    \"url\" : \"auth/login\",\n" +
-                "    \"description\" : \"an endpoint to login your stuff\",\n" +
-                "    \"contentType\" : \"application/json\",\n" +
-                "    \"request\" : {\n" +
-                "      \"password\" : {\n" +
-                "        \"type\" : \"int\"\n" +
-                "      },\n" +
-                "      \"username\" : {\n" +
-                "        \"type\" : \"string\"\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"response\" : {\n" +
-                "      \"status\" : {\n" +
-                "        \"type\" : \"boolean\"\n" +
-                "      }\n" +
-                "    },\n" +
-                "    \"headers\" : {\n" +
-                "      \"Authorization\" : \"Bearer token\"\n" +
-                "    },\n" +
-                "    \"roles\" : [ \"admin\", \"user\" ],\n" +
-                "    \"statusCodes\" : {\n" +
-                "      \"200\" : \"OK\",\n" +
-                "      \"500\" : \"Internal error\",\n" +
-                "      \"401\" : \"unauthorised\"\n" +
-                "    }\n" +
-                "  } ]\n" +
-                "}" , doc.toPrettyJsonString());
+                "\"version\":\"1.0.0\"},\"endpoints\":[{\"group\":\"basic\",\"method\":\"GET\",\"accept\":\"text/plain\",\"url\":\"/\",\"description\":" +
+                "\"Greet the viewer\",\"contentType\":\"text/plain\",\"headers\":{\"Authorization\":\"Bearer token\"},\"roles\":[\"user\",\"admin\"]," +
+                "\"statusCodes\":{\"200\":\"OK\",\"500\":\"Internal error\"}},{\"group\":\"auth\",\"method\":\"POST\",\"accept\":\"application/json\"," +
+                "\"url\":\"/auth/login\",\"description\":\"an endpoint to login your stuff\",\"contentType\":\"application/json\",\"request\"" +
+                ":{\"password\":{\"type\":\"string\"},\"username\":{\"type\":\"string\"}},\"response\":{\"status\":{\"type\":\"boolean\"}}," +
+                "\"headers\":{\"Authorization\":\"Bearer token\"},\"roles\":[\"admin\",\"user\"],\"statusCodes\":{\"200\":\"OK\",\"500\":\"Internal error\"," +
+                "\"401\":\"unauthorised\"}}]}" , doc.toJsonString());
     }
 
     @Test

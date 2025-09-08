@@ -1,4 +1,4 @@
-package exceptions;
+package chazaAPI.exceptions;
 
 public class ChazaAPIException extends Exception {
     public ChazaAPIException(String message) {

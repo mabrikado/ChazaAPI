@@ -1,14 +1,14 @@
 package documentation;
 
-import exceptions.ChazaAPIException;
+import chazaAPI.documentation.APIDisplay;
+import chazaAPI.documentation.ApiInfo;
+import chazaAPI.exceptions.ChazaAPIException;
 import io.javalin.Javalin;
-import io.javalin.config.JavalinConfig;
 import org.junit.jupiter.api.*;
-import testlogic.GoodController;
-import testlogic.GoodController2;
+import chazaAPI.testlogic.GoodController;
+import chazaAPI.testlogic.GoodController2;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

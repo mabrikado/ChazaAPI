@@ -1,4 +1,4 @@
-package annotations;
+package chazaAPI.annotations;
 
 public @interface Header {
     String name();

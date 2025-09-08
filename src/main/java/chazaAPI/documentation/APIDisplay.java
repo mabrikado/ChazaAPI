@@ -1,16 +1,13 @@
-package documentation;
-import exceptions.ChazaAPIException;
+package chazaAPI.documentation;
+import chazaAPI.exceptions.ChazaAPIException;
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
 import io.javalin.http.staticfiles.Location;
 import lombok.Data;
-import testlogic.GoodController;
-import testlogic.GoodController2;
+import chazaAPI.testlogic.GoodController;
+import chazaAPI.testlogic.GoodController2;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 
 @Data
@@ -52,15 +49,25 @@ public class APIDisplay {
 
             throw new ChazaAPIException("Server instance cannot be null");
         }
-        server.get("/chaza", ctx -> ctx.redirect("APIDoc.html"));
+        server.get("/chazaAPI", ctx -> ctx.redirect("APIDoc.html"));
         server.get("/chaza-json", ctx -> {
             ctx.json(doc.toPrettyJsonString());
         });
     }
 
 
+    /**
+     * Main entry point to start a Javalin server with generated API documentation for ChazaAPI.
+     *
+     * Note: This method is intended only for internal use to test API capabilities and
+     * documentation generation. It should not be called or invoked by any external
+     * application or production environment.
+     *
+     * @param args command-line arguments (not used)
+     * @throws ChazaAPIException if there is an error during API documentation generation or server setup
+     */
     public static void main(String[] args) throws ChazaAPIException {
-        Javalin app = Javalin.create(config -> APIDisplay.configureServer(config));
+        Javalin app = Javalin.create(APIDisplay::configureServer);
         APIDisplay.getInstance()
                 .setApiInfo(ApiInfo.getInstance()
                         .setTitle("API Documentation")
