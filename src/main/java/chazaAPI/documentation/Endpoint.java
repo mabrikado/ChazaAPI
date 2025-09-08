@@ -1,6 +1,7 @@
 package chazaAPI.documentation;
 
 import chazaAPI.annotations.*;
+import chazaAPI.reflection.ReflectionUtils;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import chazaAPI.exceptions.ChazaAPIException;
@@ -27,7 +28,23 @@ public class Endpoint {
     private String description;
     private String contentType;
 
+    /**
+     * The request payload structure.
+     *
+     * This map represents the fields expected in the request body,
+     * where each key is the field name and the value is either
+     * the simple type name or a nested map for complex objects.
+     * Recursive extraction is supported for complex DTO classes.
+     */
     private Map<String, Object> request;
+
+    /**
+     * The response payload structure.
+     *
+     * This map represents the fields provided in the response body,
+     * similarly structured as the request map, supporting
+     * recursive extraction for nested complex types.
+     */
     private Map<String, Object> response;
 
     @JsonInclude(JsonInclude.Include.NON_NULL)
@@ -41,13 +58,12 @@ public class Endpoint {
     private List<String> roles = List.of("any");
 
     /**
-     * Default constructor. Initializes all internal maps.
+     * Default constructor. Initializes internal maps.
      */
     public Endpoint() {
         headers = new HashMap<>();
         statusCodes = new HashMap<>();
     }
-
 
     @Override
     public boolean equals(Object o) {
@@ -77,12 +93,19 @@ public class Endpoint {
     }
 
     /**
-     * Builds an Endpoint instance from the provided EndpointDoc annotation.
+     * Builds an Endpoint instance from the provided EndPoint annotation.
      *
-     * @param endPoint the annotation to read from
+     * Extracts metadata such as HTTP method, URL, headers, request and response
+     * field structures, and status codes. Supports recursive extraction of
+     * complex DTO classes for request and response bodies.
+     *
+     * @param endPoint the EndPoint annotation to read from
+     * @param chaza the Chaza annotation on the controller class
+     * @param method the Java method this endpoint represents
      * @return the resulting Endpoint object
+     * @throws ChazaAPIException if annotation constraints are violated or invalid
      */
-    public static Endpoint fromAnnotation(EndPoint endPoint, Chaza chaza) {
+    public static Endpoint fromAnnotation(EndPoint endPoint, Chaza chaza, java.lang.reflect.Method method) throws ChazaAPIException {
         Endpoint endpoint = new Endpoint();
 
         // Set group: prefer @EndPoint.group over @Chaza.group
@@ -96,7 +119,6 @@ public class Endpoint {
         String endpointUrl = endPoint.url().startsWith("/") ? endPoint.url().substring(1) : endPoint.url();
         endpoint.setUrl(baseUrl + endpointUrl);
 
-        // Set description
         endpoint.setDescription(endPoint.description());
 
         // Set accepted media type: prefer @EndPoint.accept over @Chaza.accept
@@ -105,13 +127,12 @@ public class Endpoint {
         // Set content type: prefer @EndPoint.contentType over @Chaza.contentType
         endpoint.setContentType(endPoint.contentType().isEmpty() ? chaza.contentType() : endPoint.contentType());
 
-        // Set roles
-        if(endPoint.roles().length == 0){
+        // Set roles : prefer @EndPoint.roles() over @Chaza.roles(
+        if (endPoint.roles().length == 0) {
             endpoint.setRoles(Arrays.asList(chaza.roles()));
-        }else{
+        } else {
             endpoint.setRoles(List.of(endPoint.roles()));
         }
-
 
         // Set headers
         if (endPoint.headers().length > 0) {
@@ -120,6 +141,11 @@ public class Endpoint {
                 headersMap.put(header.name(), header.value());
             }
             endpoint.setHeaders(headersMap);
+        }
+
+        // Ensure the requestFields and requestDTO are not both set at the same place
+        if (endPoint.requestFields().length > 0 && endPoint.requestDTO() != void.class) {
+            throw new ChazaAPIException("Cannot use both requestFields and requestDTO; please use one method -> " + method.getName());
         }
 
         // Set request fields
@@ -131,6 +157,14 @@ public class Endpoint {
                 requestMap.put(field.name(), fieldInfo);
             }
             endpoint.setRequest(requestMap);
+        } else if (endPoint.requestDTO() != void.class) {
+            Map<String, Object> requestMap = ReflectionUtils.getFieldsRecursive(endPoint.requestDTO(), new HashSet<>());
+            endpoint.setRequest(requestMap);
+        }
+
+        //Ensure the responseFields and responseDTO are not both set at same place
+        if (endPoint.responseFields().length > 0 && endPoint.responseDTO() != void.class) {
+            throw new ChazaAPIException("Cannot use both responseFields and responseDTO; please use one method -> " + method.getName());
         }
 
         // Set response fields
@@ -141,6 +175,9 @@ public class Endpoint {
                 fieldInfo.put("type", field.type());
                 responseMap.put(field.name(), fieldInfo);
             }
+            endpoint.setResponse(responseMap);
+        } else if (endPoint.responseDTO() != void.class) {
+            Map<String, Object> responseMap = ReflectionUtils.getFieldsRecursive(endPoint.responseDTO(), new HashSet<>());
             endpoint.setResponse(responseMap);
         }
 
@@ -153,19 +190,19 @@ public class Endpoint {
             endpoint.setStatusCodes(statusCodesMap);
         }
 
-
         return endpoint;
     }
-
 
     /**
      * Scans a list of controller classes for annotated endpoints.
      *
-     * Only classes annotated with @Chaza will be processed.
+     * Only classes annotated with Chaza will be processed.
+     * All methods annotated with EndPoint will be extracted into
+     * Endpoint instances.
      *
      * @param controllers a list of controller classes to scan
      * @return a list of extracted Endpoint objects
-     * @throws ChazaAPIException if a class is not annotated with @Chaza
+     * @throws ChazaAPIException if a class is not annotated with Chaza
      */
     public static List<Endpoint> scan(List<Class<?>> controllers) throws ChazaAPIException {
         List<Endpoint> endpoints = new ArrayList<>();
@@ -178,7 +215,7 @@ public class Endpoint {
             for (java.lang.reflect.Method method : controllerClass.getDeclaredMethods()) {
                 EndPoint annotation = method.getAnnotation(EndPoint.class);
                 if (annotation != null) {
-                    Endpoint endpoint = Endpoint.fromAnnotation(annotation , controllerClass.getAnnotation(Chaza.class));
+                    Endpoint endpoint = Endpoint.fromAnnotation(annotation, controllerClass.getAnnotation(Chaza.class), method);
                     endpoints.add(endpoint);
                 }
             }
