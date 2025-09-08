@@ -35,7 +35,7 @@ class APIDisplayTest {
     @Test
     void testScanEndpointsLoadsEndpoints() throws ChazaAPIException {
         APIDisplay display = APIDisplay.getInstance();
-        display.scanEndpoints(List.of(GoodController.class, GoodController2.class));
+        display.scanEndPoints(List.of(GoodController.class, GoodController2.class));
 
         assertNotNull(display.getEndpoints());
         assertFalse(display.getEndpoints().isEmpty(), "Expected endpoints to be found");
@@ -47,7 +47,7 @@ class APIDisplayTest {
 
         APIDisplay display = APIDisplay.getInstance()
                 .setApiInfo(ApiInfo.getInstance().setTitle("API"))
-                .scanEndpoints(List.of(GoodController.class))
+                .scanEndPoints(List.of(GoodController.class))
                 .generateDocumentation();
 
         assertDoesNotThrow(() -> display.hostToServer(server));
