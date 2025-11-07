@@ -4,7 +4,7 @@ import chazaAPI.annotations.*;
 import io.javalin.http.Context;
 
 
-@Chaza(group = "auth" , description = "Endpoints Authentication", contentType = "application/json" , accept = "application/json" , roles = {"admin", "user"})
+@Chaza(group = "auth" , contentType = "application/json" , accept = "application/json" , roles = {"admin", "user"})
 public class GoodController2 {
 
     @EndPoint(

@@ -4,7 +4,7 @@ import chazaAPI.DTO.Item;
 import chazaAPI.annotations.*;
 import io.javalin.http.Context;
 
-@Chaza(group = "items" , baseUrl = "items/", description = "A groud to do CRUD for items" , accept = "application/json" , contentType = "application/json" , roles = {"admin"})
+@Chaza(group = "items" , baseUrl = "items/", accept = "application/json" , contentType = "application/json" , roles = {"admin"})
 public class GoodController3 {
 
     @EndPoint(

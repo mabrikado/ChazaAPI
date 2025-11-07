@@ -12,7 +12,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface Chaza {
     String group() default "/";
-    String description() default "";
     String baseUrl() default "";
     String accept() default "text/plain";
     String contentType() default "text/plain";

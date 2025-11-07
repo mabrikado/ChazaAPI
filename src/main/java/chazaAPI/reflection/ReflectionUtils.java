@@ -1,7 +1,12 @@
 package chazaAPI.reflection;
 
+import chazaAPI.annotations.Chaza;
+import org.reflections.Reflections;
+import org.reflections.scanners.Scanners;
+
 import java.lang.reflect.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for performing reflection-based operations on classes,
@@ -69,6 +74,15 @@ public class ReflectionUtils {
         }
 
         return fieldsMap;
+    }
+
+    public static List<Class<?>> findChazaControllers(String basePackage) {
+        Reflections reflections = new Reflections(basePackage, Scanners.TypesAnnotated);
+
+        Set<Class<?>> chazaClasses = reflections.getTypesAnnotatedWith(Chaza.class);
+
+        // Convert Set to List
+        return new ArrayList<>(chazaClasses);
     }
 
     /**

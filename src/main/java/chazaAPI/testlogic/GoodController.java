@@ -3,7 +3,6 @@ import chazaAPI.annotations.*;
 
 
 @Chaza(group = "basic" ,
-        description = "A group of endpoints for basic logic",
         contentType = "text/plain",
         roles = {"user" , "admin"}
 )

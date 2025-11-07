@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Represents the documentation for an API, including general API information
@@ -29,6 +30,9 @@ public class APIDoc {
      * List of API endpoints included in this documentation.
      */
     private List<Endpoint> endpoints;
+
+    //groups
+    private Map<String, Object> groups; //name and descriptions
 
     /**
      * Default constructor.

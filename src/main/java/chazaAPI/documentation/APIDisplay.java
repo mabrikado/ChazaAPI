@@ -1,5 +1,6 @@
 package chazaAPI.documentation;
 import chazaAPI.exceptions.ChazaAPIException;
+import chazaAPI.reflection.ReflectionUtils;
 import chazaAPI.testlogic.GoodController3;
 import io.javalin.Javalin;
 import io.javalin.config.JavalinConfig;
@@ -8,6 +9,7 @@ import lombok.Data;
 import chazaAPI.testlogic.GoodController;
 import chazaAPI.testlogic.GoodController2;
 
+import java.util.Collection;
 import java.util.List;
 
 
@@ -28,6 +30,11 @@ public class APIDisplay {
     public APIDisplay setApiInfo(ApiInfo apiInfo){
         this.apiInfo = apiInfo;
         return this;
+    }
+
+    public APIDisplay scanEndPoints(String basePackage) throws ChazaAPIException {
+        List<Class<?>> controllers =  ReflectionUtils.findChazaControllers(basePackage);
+        return scanEndPoints(controllers);
     }
 
     public APIDisplay scanEndPoints(List<Class<?>> controllers) throws ChazaAPIException {
@@ -79,7 +86,7 @@ public class APIDisplay {
                         .addContact("phone" , "94836")
                         .addLicense("title" , "ChazaDoc")
                         .addLicense("url" , "www.chazaAPI.com"))
-                .scanEndPoints(List.of(GoodController.class , GoodController2.class , GoodController3.class))
+                .scanEndPoints("chazaAPI.testlogic")
                 .generateDocumentation()
                 .hostToServer(app);
         app.start(8080);
